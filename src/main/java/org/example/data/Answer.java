@@ -7,10 +7,19 @@ public class Answer implements Serializable {
     private int questionID;
     private String answer;
 
+    private int points;
+
     public Answer(int studentID, int questionID, String answer) {
         this.studentID = studentID;
         this.questionID = questionID;
         this.answer = answer;
+    }
+
+    public Answer(String data) {
+        String dataArray[] = data.split(";");
+        studentID = Integer.parseInt(dataArray[0]);
+        questionID = Integer.parseInt(dataArray[1]);
+        answer = dataArray[2];
     }
 
     public int getStudentID() {
@@ -23,6 +32,14 @@ public class Answer implements Serializable {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     @Override
@@ -39,4 +56,5 @@ public class Answer implements Serializable {
         bufferedWriter.write(toString());
         bufferedWriter.close();
     }
+
 }
