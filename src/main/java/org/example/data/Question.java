@@ -22,6 +22,15 @@ public class Question implements Serializable {
                 ";" + points);
     }
 
+    public Question(int ID, String questionText, String answerA, String answerB, String answerC, String answerD) {
+        this.ID = ID;
+        this.questionText = questionText;
+        this.answerA = answerA;
+        this.answerB = answerB;
+        this.answerC = answerC;
+        this.answerD = answerD;
+    }
+
     public Question(String data) {
         String dataArray[] = data.split(";");
         ID = Integer.parseInt(dataArray[0]);
