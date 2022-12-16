@@ -79,6 +79,7 @@ public class Student extends Thread{
     @Override
     public void run()
     {
+        /*
         while (true)
         {
             try {
@@ -90,5 +91,21 @@ public class Student extends Thread{
             }
 
         }
+
+         */
+        String msg = "Hello1";
+        byte[] buf = msg.getBytes();
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
+        try {
+            socket.send(packet);
+            packet = new DatagramPacket(buf, buf.length);
+            socket.receive(packet);
+            String received = new String(packet.getData(), 0, packet.getLength());
+            System.out.println(received);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 }
