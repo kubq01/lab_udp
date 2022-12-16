@@ -43,7 +43,7 @@ public class Student extends Thread{
         String received = new String(packet.getData(), 0, packet.getLength());
         String check = received.substring(0,3);
 
-        if(!check.equals("end")) {
+        if((!check.equals("end"))&&(!check.equals("max"))) {
             /*
             System.out.println("getQuestionErr");
             ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(reciviedData));
@@ -56,9 +56,12 @@ public class Student extends Thread{
             System.out.println(received);
             question = new Question(received);
 
-        }else
+        }else if(check.equals("end"))
         {
             System.out.println("Quiz finished. Your score is: "+received.substring(3));
+            return false;
+        }else {
+            System.out.println("Too many user are using the service now. Try agaoin later");
             return false;
         }
 
@@ -86,15 +89,20 @@ public class Student extends Thread{
 
         Answer answer = new Answer(studentID,question.getID(),ans);
 
+        /*
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(answer);
 
-        byte[] buf = baos.toByteArray();
+         */
+
+        byte[] buf = answer.toString().getBytes();
 
         socket.send(new DatagramPacket(buf, buf.length,address,port));
 
     }
+
+
 
     @Override
     public void run()
@@ -136,9 +144,9 @@ public class Student extends Thread{
                 System.out.println(receivedMess);
             }
 
-             */
-            getQuestion();
-            showQuestion();
+             */while(getQuestion())
+                 showQuestion();
+
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

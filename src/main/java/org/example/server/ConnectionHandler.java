@@ -62,7 +62,7 @@ public class ConnectionHandler extends Thread {
                 }else {
                     if(activeUsers.containsKey(incomingPacket.getAddress()))
                     {
-                        activeUsers.get(incomingPacket.getAddress()).sendQuestion();
+                        activeUsers.get(incomingPacket.getAddress()).getAnswer(incomingPacket);
 
                     }else
                     {

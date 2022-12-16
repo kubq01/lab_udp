@@ -38,6 +38,7 @@ public class Quiz implements Serializable {
             }
             correct = Short.parseShort(reader.readLine());
             readQuestions.add(new Question(qId, q, answers[0], answers[1], answers[2], answers[3], correct));
+            qId++;
         }
         reader.close();
         return readQuestions;

@@ -17,6 +17,7 @@ public class ServerThread extends Thread{
     private InetAddress userAddress;
     private final PointCalculator calculator;
     private List<Answer> answers;
+    private List<Boolean> isAnswered = new ArrayList<>();
     private Quiz quiz;
     private int userPort;
     private int testCounter = 0;
@@ -30,6 +31,8 @@ public class ServerThread extends Thread{
         this.quiz = quiz;
         answers = new ArrayList<>();
         userPort = port;
+        for(int i = 0; i<quiz.getQuestions().size(); i++)
+            isAnswered.add(false);
     }
 
     @Override
@@ -64,6 +67,29 @@ public class ServerThread extends Thread{
         }
 
          */
+        sendQuestion();
+
+
+    }
+
+    public void getAnswer(DatagramPacket packet) {
+        String received = new String(packet.getData(), 0, packet.getLength());
+        Answer answer = new Answer(received);
+        answers.add(answer);
+        isAnswered.set(answer.getQuestionID(),true);
+        maxPoints += 1;
+
+        short ans = -1;
+        switch (answer.getAnswer())
+        {
+            case "A": ans = 1; break;
+            case "B": ans = 2; break;
+            case "C": ans = 3; break;
+            case "D": ans = 4; break;
+        }
+
+        if(ans == quiz.getQuestions().get(answer.getQuestionID()).getCorrect())
+            studentPoints++;
 
         sendQuestion();
 
@@ -87,23 +113,23 @@ public class ServerThread extends Thread{
 
     }
 
-    public void sendQuestion()
+    public boolean sendQuestion()
     {
-        int counter = 0;
-        for(Answer answer : answers)
+
+        for(int i = 0; i< isAnswered.size(); i++)
         {
-            if(answer.getQuestionID()!=counter)
+            if(!isAnswered.get(i))
             {
-                sendMessage(quiz.getQuestions().get(counter).toString().getBytes());
-                return;
+                sendMessage(quiz.getQuestions().get(i).toString().getBytes());
+                return true;
             }
 
-            counter++;
+
         }
-        if(counter<quiz.getQuestions().size())
-            sendMessage(quiz.getQuestions().get(counter).toString().getBytes());
-        else
-            sendMessage(String.valueOf("end"+((studentPoints * 1.0 / maxPoints)*100)+"%").getBytes());
+
+        sendMessage(String.valueOf("end"+((studentPoints * 1.0 / maxPoints)*100)+"%").getBytes());
+        return false;
+
 
     }
 
