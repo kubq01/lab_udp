@@ -28,6 +28,7 @@ public class Quiz implements Serializable {
         int qId = 0;
         String q;
         String[] answers = {"", "" , "", ""};
+        short correct;
         while((q = reader.readLine()) != null) {
             for (int i = 0 ; i < 4; i++){
                 answers[i] = reader.readLine();
@@ -35,8 +36,10 @@ public class Quiz implements Serializable {
                     throw new IOException("Question is not correctly written in txt file.");
                 }
             }
-            readQuestions.add(new Question(qId, q, answers[0], answers[1], answers[2], answers[3]));
+            correct = Short.parseShort(reader.readLine());
+            readQuestions.add(new Question(qId, q, answers[0], answers[1], answers[2], answers[3], correct));
         }
+        reader.close();
         return readQuestions;
     }
 

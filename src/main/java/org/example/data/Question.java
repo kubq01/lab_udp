@@ -10,6 +10,7 @@ public class Question implements Serializable {
     private String answerC;
     private String answerD;
     private int points;
+    private short correct;
 
     @Override
     public String toString() {
@@ -22,13 +23,15 @@ public class Question implements Serializable {
                 ";" + points);
     }
 
-    public Question(int ID, String questionText, String answerA, String answerB, String answerC, String answerD) {
+    public Question(int ID, String questionText, String answerA,
+                    String answerB, String answerC, String answerD, short correct) {
         this.ID = ID;
         this.questionText = questionText;
         this.answerA = answerA;
         this.answerB = answerB;
         this.answerC = answerC;
         this.answerD = answerD;
+        this.correct = correct;
     }
 
     public Question(String data) {
@@ -68,5 +71,9 @@ public class Question implements Serializable {
 
     public int getPoints() {
         return points;
+    }
+
+    public short getCorrect() {
+        return correct;
     }
 }

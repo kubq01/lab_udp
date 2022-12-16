@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="84c897fa-a6e8-43ca-aafd-8cfd17fa29da" name="Changes" comment="I'll finish in a sec, need to go to grocery.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/server/ConnectionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="84c897fa-a6e8-43ca-aafd-8cfd17fa29da" name="Changes" comment="Working on server side">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/data/Answer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/data/Answer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/data/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/data/Question.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/data/Quiz.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/data/Quiz.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/server/PointCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/server/PointCalculator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/server/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/server/ConnectionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/server/ConnectionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/server/ServerThread.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +64,8 @@
       <updated>1671093098800</updated>
       <workItem from="1671098265244" duration="12000" />
       <workItem from="1671127953494" duration="3202000" />
-      <workItem from="1671134162280" duration="2600000" />
+      <workItem from="1671134162280" duration="2628000" />
+      <workItem from="1671181358557" duration="6546000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1671093146646</created>
@@ -89,7 +88,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671131945278</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Working on server side">
+      <created>1671136950957</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1671136950957</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,6 +116,7 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="Quiz" />
     <MESSAGE value="I'll finish in a sec, need to go to grocery." />
-    <option name="LAST_COMMIT_MESSAGE" value="I'll finish in a sec, need to go to grocery." />
+    <MESSAGE value="Working on server side" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on server side" />
   </component>
 </project>
