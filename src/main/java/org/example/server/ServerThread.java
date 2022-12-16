@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class ServerThread extends Thread{
 
@@ -34,7 +35,10 @@ public class ServerThread extends Thread{
             try {
                 InetAddress group = InetAddress.getByName("203.0.113.0");
                 DatagramPacket packet;
+                ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(250);
+                ConnectionHandler handler = new ConnectionHandler(socket);
                 packet = new DatagramPacket(buf, buf.length, group, 4446);
+                Future<Answer> answerFuture = executor.submit(handler);
                 socket.send(packet);
             } catch (IOException e) {
                 throw new RuntimeException(e);
