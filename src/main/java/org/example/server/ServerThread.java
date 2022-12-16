@@ -18,13 +18,18 @@ public class ServerThread extends Thread{
     private final PointCalculator calculator;
     private List<Answer> answers;
     private Quiz quiz;
+    private int userPort;
+    private int testCounter = 0;
+    private int studentPoints = 0;
+    private int maxPoints = 0;
 
-    public ServerThread(DatagramSocket socket, InetAddress userAddress, PointCalculator calculator, Quiz quiz) throws IOException {
+    public ServerThread(DatagramSocket socket, InetAddress userAddress,int port, PointCalculator calculator, Quiz quiz) throws IOException {
         this.socket = socket;
         this.userAddress = userAddress;
         this.calculator = calculator;
         this.quiz = quiz;
         answers = new ArrayList<>();
+        userPort = port;
     }
 
     @Override
@@ -43,20 +48,25 @@ public class ServerThread extends Thread{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }*/
+        }
         buf = "HelloS".getBytes();
         try {
             DatagramPacket packet;
-            packet = new DatagramPacket(buf, buf.length, userAddress, 4445);
+            packet = new DatagramPacket(buf, buf.length, userAddress, userPort);
             socket.send(packet);
 
-            /*DatagramPacket incomingPacket
+            DatagramPacket incomingPacket
                     = new DatagramPacket(buf, buf.length);
-            socket.receive(incomingPacket);*/
+            socket.receive(incomingPacket);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+         */
+
+        sendQuestion();
+
 
     }
 
@@ -68,6 +78,45 @@ public class ServerThread extends Thread{
                     + answer.getQuestionID() + ": " + answer.getPoints());
         }
         bufferedWriter.close();
+    }
+
+    public void addToCounter()
+    {
+        testCounter++;
+        sendMessage(String.valueOf(testCounter).getBytes());
+
+    }
+
+    public void sendQuestion()
+    {
+        int counter = 0;
+        for(Answer answer : answers)
+        {
+            if(answer.getQuestionID()!=counter)
+            {
+                sendMessage(quiz.getQuestions().get(counter).toString().getBytes());
+                return;
+            }
+
+            counter++;
+        }
+        if(counter<quiz.getQuestions().size())
+            sendMessage(quiz.getQuestions().get(counter).toString().getBytes());
+        else
+            sendMessage(String.valueOf("end"+((studentPoints * 1.0 / maxPoints)*100)+"%").getBytes());
+
+    }
+
+    public void sendMessage(byte[] mess)
+    {
+        try {
+            DatagramPacket packet;
+            packet = new DatagramPacket(mess, mess.length, userAddress, userPort);
+            socket.send(packet);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

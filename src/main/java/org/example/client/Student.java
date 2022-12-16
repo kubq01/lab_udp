@@ -30,18 +30,38 @@ public class Student extends Thread{
         byte[] data = new byte[500];
         DatagramPacket packet = new DatagramPacket(data,data.length);
         socket.receive(packet);
+
+        /*
         byte[] reciviedData = new byte[packet.getLength()];
         String check = Arrays.toString(reciviedData).substring(0,3);
 
+        for(int i = 0; i<packet.getLength();i++)
+            reciviedData[i] = data[i];
+
+         */
+
+        String received = new String(packet.getData(), 0, packet.getLength());
+        String check = received.substring(0,3);
+
         if(!check.equals("end")) {
+            /*
+            System.out.println("getQuestionErr");
             ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(reciviedData));
+            System.out.println("getQuestionErr2");
             question = (Question) in.readObject();
             in.close();
+            System.out.println("getQuestionErr3");
+
+             */
+            System.out.println(received);
+            question = new Question(received);
+
         }else
         {
-            System.out.println("Quiz finished. Your score is: "+Arrays.toString(reciviedData).substring(3));
+            System.out.println("Quiz finished. Your score is: "+received.substring(3));
             return false;
         }
+
 
         return true;
     }
@@ -98,11 +118,28 @@ public class Student extends Thread{
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         try {
             socket.send(packet);
+            /*
             packet = new DatagramPacket(buf, buf.length);
             socket.receive(packet);
             String received = new String(packet.getData(), 0, packet.getLength());
             System.out.println(received);
-        } catch (IOException e) {
+            while(true)
+            {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("press any key and ENTER");
+                scanner.nextLine();
+                DatagramPacket p2 = new DatagramPacket(buf, buf.length, address, 4445);
+                socket.send(p2);
+                p2 = new DatagramPacket(buf, buf.length);
+                socket.receive(p2);
+                String receivedMess = new String(p2.getData(), 0, p2.getLength());
+                System.out.println(receivedMess);
+            }
+
+             */
+            getQuestion();
+            showQuestion();
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

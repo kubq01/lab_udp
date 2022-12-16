@@ -1,0 +1,12 @@
+tresc1
+odpa
+odpB
+odpc
+odpd
+2
+tresc2
+a
+b
+C
+d
+3
