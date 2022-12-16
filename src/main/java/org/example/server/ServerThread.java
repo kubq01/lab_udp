@@ -1,7 +1,6 @@
 package org.example.server;
 
 import org.example.data.Answer;
-import org.example.data.Question;
 import org.example.data.Quiz;
 
 import java.io.*;
@@ -10,40 +9,55 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class ServerThread extends Thread{
 
     private DatagramSocket socket;
+
+    private InetAddress userAddress;
     private final PointCalculator calculator;
     private List<Answer> answers;
     private Quiz quiz;
 
-    public ServerThread(PointCalculator calculator) throws IOException {
+    public ServerThread(DatagramSocket socket, InetAddress userAddress, PointCalculator calculator, Quiz quiz) throws IOException {
+        this.socket = socket;
+        this.userAddress = userAddress;
         this.calculator = calculator;
+        this.quiz = quiz;
         answers = new ArrayList<>();
-        FileReader reader = new FileReader("bazaPytan.txt");
-        quiz = new Quiz(1, new BufferedReader(reader));
-        socket = new DatagramSocket(4446);
     }
 
     @Override
     public void run() {
         byte[] buf = new byte[256];
-        for (Question question : quiz.getQuestions()) {
+        /*for (Question question : quiz.getQuestions()) {
             buf = question.toString().getBytes();
             try {
-                InetAddress group = InetAddress.getByName("203.0.113.0");
+                DatagramPacket incomingPacket
+                        = new DatagramPacket(buf, buf.length);
+                socket.receive(incomingPacket);
+                InetAddress ip = InetAddress.getByName("localhost");
                 DatagramPacket packet;
-                ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(250);
-                ConnectionHandler handler = new ConnectionHandler(socket);
-                packet = new DatagramPacket(buf, buf.length, group, 4446);
-                Future<Answer> answerFuture = executor.submit(handler);
+                packet = new DatagramPacket(buf, buf.length, ip, 4446);
                 socket.send(packet);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }*/
+        buf = "HelloS".getBytes();
+        try {
+            DatagramPacket packet;
+            packet = new DatagramPacket(buf, buf.length, userAddress, 4445);
+            socket.send(packet);
+
+            /*DatagramPacket incomingPacket
+                    = new DatagramPacket(buf, buf.length);
+            socket.receive(incomingPacket);*/
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     public void writeScores() throws IOException {

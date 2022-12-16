@@ -93,7 +93,7 @@ public class Student extends Thread{
         }
 
          */
-        String msg = "Hello1";
+        String msg = "HelloC";
         byte[] buf = msg.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         try {
