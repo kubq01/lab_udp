@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +21,17 @@ public class ServerThread extends Thread{
     private List<Boolean> isAnswered = new ArrayList<>();
     private Quiz quiz;
     private int userPort;
+    private int port;
     private int testCounter = 0;
     private int studentPoints = 0;
     private int maxPoints = 0;
 
     private boolean finished = false;
 
-    public ServerThread(DatagramSocket socket, InetAddress userAddress,
-                        int port, PointCalculator calculator, Quiz quiz) throws IOException {
-        this.socket = socket;
+    public ServerThread(InetAddress userAddress,
+                        int port, PointCalculator calculator, Quiz quiz, int myPort) throws IOException {
+       // this.socket = socket;
+        this.socket = new DatagramSocket(myPort);
         this.userAddress = userAddress;
         this.calculator = calculator;
         this.quiz = quiz;
@@ -36,6 +39,11 @@ public class ServerThread extends Thread{
         userPort = port;
         for(int i = 0; i<quiz.getQuestions().size(); i++)
             isAnswered.add(false);
+        this.port = myPort;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     @Override
@@ -71,15 +79,41 @@ public class ServerThread extends Thread{
 
          */
         sendQuestion();
+        while(true)
+        {
+            if(isInterrupted())
+            {
+                System.out.println("Thread interrupted");
+                break;
+            }
+            byte[] data = new byte[500];
+            DatagramPacket answerPacket = new DatagramPacket(data,data.length);
+            try {
+                socket.receive(answerPacket);
+                socket.setSoTimeout(1000);
+                getAnswer(answerPacket);
+            }catch (SocketTimeoutException e)
+            {
+                System.out.println("Timeout");
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
-    public void getAnswer(DatagramPacket packet) {
+    public void getAnswer(DatagramPacket packet) throws IOException {
+        //System.out.println("getAnswer1");
         String received = new String(packet.getData(), 0, packet.getLength());
+        if(received.equals("stop"))
+            return;
         Answer answer = new Answer(received);
+        //System.out.println("getAnswer2");
         answers.add(answer);
         isAnswered.set(answer.getQuestionID(),true);
         maxPoints += 1;
-
+        //System.out.println("getAnswer3");
         short ans = -1;
         switch (answer.getAnswer())
         {
@@ -87,12 +121,15 @@ public class ServerThread extends Thread{
             case "B": ans = 2; break;
             case "C": ans = 3; break;
             case "D": ans = 4; break;
+            default:
+                break;
         }
 
         if(ans == quiz.getQuestions().get(answer.getQuestionID()).getCorrect())
             studentPoints++;
 
         sendQuestion();
+
 
 
     }
@@ -143,6 +180,7 @@ public class ServerThread extends Thread{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return false;
     }
 

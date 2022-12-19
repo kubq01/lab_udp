@@ -19,7 +19,10 @@ public class Answer implements Serializable {
         String dataArray[] = data.split(";");
         studentID = Integer.parseInt(dataArray[0]);
         questionID = Integer.parseInt(dataArray[1]);
+        //System.out.println("answerConst");
         answer = dataArray[2];
+        //System.out.println("answerConst2");
+
     }
 
     public int getStudentID() {

@@ -56,7 +56,7 @@ public class ConnectionHandler extends Thread {
                 && activeUsers.size() <= 250) {
                     InetAddress ip = incomingPacket.getAddress();
                     int port = incomingPacket.getPort();
-                    ServerThread thread = new ServerThread(socket, ip, port, null, quiz);
+                    ServerThread thread = new ServerThread(ip, port, null, quiz,(4446+activeUsers.size()));
                     System.out.println("New user");
                     activeUsers.put(ip,thread);
                     thread.start();
@@ -64,10 +64,15 @@ public class ConnectionHandler extends Thread {
                 {
                     InetAddress address = incomingPacket.getAddress();
                     ServerThread currentlyServed = activeUsers.get(address);
-                currentlyServed.getAnswer(incomingPacket);
-                if(currentlyServed.isFinished()){
-                    activeUsers.remove(address);
-                }
+                    //currentlyServed.getAnswer(incomingPacket);
+                    DatagramPacket sendToThread = new DatagramPacket(incomingPacket.getData(),incomingPacket.getLength(),InetAddress.getByName("localhost"),currentlyServed.getPort());
+                    socket.send(sendToThread);
+                    if(currentlyServed.isFinished()){
+                        activeUsers.get(address).interrupt();
+                        System.out.println("sending interrupt");
+                        activeUsers.remove(address);
+
+                    }
                 }else if(activeUsers.size() > 250) {
                     System.out.println("Error Server at maximum capacity");
                 }

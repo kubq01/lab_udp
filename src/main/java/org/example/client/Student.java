@@ -4,10 +4,7 @@ import org.example.data.Answer;
 import org.example.data.Question;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
+import java.net.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -29,7 +26,16 @@ public class Student extends Thread{
     public boolean getQuestion() throws IOException, ClassNotFoundException {
         byte[] data = new byte[500];
         DatagramPacket packet = new DatagramPacket(data,data.length);
-        socket.receive(packet);
+
+        //handling server not responding
+        socket.setSoTimeout(5000);
+        try {
+            socket.receive(packet);
+        }catch(SocketTimeoutException e)
+        {
+            getQuestion();
+        }
+
 
         /*
         byte[] reciviedData = new byte[packet.getLength()];
@@ -53,7 +59,7 @@ public class Student extends Thread{
             System.out.println("getQuestionErr3");
 
              */
-            System.out.println(received);
+           // System.out.println(received);
             question = new Question(received);
 
         }else if(check.equals("end"))
@@ -70,6 +76,9 @@ public class Student extends Thread{
     }
 
     public void showQuestion() throws IOException {
+
+        Timerthread timer = new Timerthread(10000);
+
         System.out.println("Question: "+question.getQuestionText());
         System.out.println("A: "+question.getAnswerA());
         System.out.println("B: "+question.getAnswerB());
@@ -77,6 +86,9 @@ public class Student extends Thread{
         System.out.println("D: "+question.getAnswerD());
 
         System.out.println("Write your answer: ");
+
+        timer.start();
+
         Scanner scanner = new Scanner(System.in);
         String ans = scanner.nextLine();
         ans = ans.toUpperCase();
@@ -85,6 +97,12 @@ public class Student extends Thread{
             System.out.println("You cannot choose this answer. Write correct answer: ");
             ans = scanner.nextLine();
             ans = ans.toUpperCase();
+        }
+
+        if(timer.isTimeEnded())
+        {
+            System.out.println("Time's up! You wont receive points for this question");
+            ans = "Q";
         }
 
         Answer answer = new Answer(studentID,question.getID(),ans);
@@ -98,8 +116,34 @@ public class Student extends Thread{
 
         byte[] buf = answer.toString().getBytes();
 
+
+
         socket.send(new DatagramPacket(buf, buf.length,address,port));
 
+    }
+
+    private class Timerthread extends Thread{
+
+
+        private int timeout;
+        private boolean timeEnded = false;
+        public Timerthread(int timeout) {
+            this.timeout = timeout;
+        }
+        @Override
+        public void run(){
+            try {
+                sleep(timeout);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }finally {
+                timeEnded = true;
+            }
+        }
+
+        public boolean isTimeEnded() {
+            return timeEnded;
+        }
     }
 
 
@@ -146,6 +190,11 @@ public class Student extends Thread{
 
              */while(getQuestion())
                  showQuestion();
+
+            String msgStop = "stop";
+            byte[] bufStop = msgStop.getBytes();
+            DatagramPacket stopThread = new DatagramPacket(bufStop,bufStop.length,address,4445);
+            socket.send(stopThread);
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
