@@ -24,7 +24,10 @@ public class ServerThread extends Thread{
     private int studentPoints = 0;
     private int maxPoints = 0;
 
-    public ServerThread(DatagramSocket socket, InetAddress userAddress,int port, PointCalculator calculator, Quiz quiz) throws IOException {
+    private boolean finished = false;
+
+    public ServerThread(DatagramSocket socket, InetAddress userAddress,
+                        int port, PointCalculator calculator, Quiz quiz) throws IOException {
         this.socket = socket;
         this.userAddress = userAddress;
         this.calculator = calculator;
@@ -68,8 +71,6 @@ public class ServerThread extends Thread{
 
          */
         sendQuestion();
-
-
     }
 
     public void getAnswer(DatagramPacket packet) {
@@ -96,15 +97,24 @@ public class ServerThread extends Thread{
 
     }
 
-    public void writeScores() throws IOException {
-        FileWriter fileWriter = new FileWriter(new File("wyniki.txt"), true);
+    public void writeAnswers() throws IOException {
+        FileWriter fileWriter = new FileWriter(new File("bazaOdpowiedzi.txt"), true);
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         for(Answer answer : answers){
             bufferedWriter.write(answer.getStudentID() + " student, pytanie "
-                    + answer.getQuestionID() + ": " + answer.getPoints());
+                    + answer.getQuestionID() + ": " + answer.getPoints() + "\n");
         }
         bufferedWriter.close();
     }
+
+    public void writeScores() throws IOException {
+        FileWriter fileWriter = new FileWriter(new File("wyniki.txt"), true);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        bufferedWriter.write("Student " + answers.get(0).getStudentID()
+                + " score: " + (studentPoints * 1.0 / maxPoints)*100 + "%\n");
+        bufferedWriter.close();
+    }
+
 
     public void addToCounter()
     {
@@ -123,14 +133,17 @@ public class ServerThread extends Thread{
                 sendMessage(quiz.getQuestions().get(i).toString().getBytes());
                 return true;
             }
-
-
         }
 
         sendMessage(String.valueOf("end"+((studentPoints * 1.0 / maxPoints)*100)+"%").getBytes());
+        try {
+            finished = true;
+            writeAnswers();
+            writeScores();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return false;
-
-
     }
 
     public void sendMessage(byte[] mess)
@@ -145,9 +158,7 @@ public class ServerThread extends Thread{
         }
     }
 
-
-
-    //czeka na podłączenie studenta
-    //wysyła do wszystkich studentów pytanie
-    //otrzymuje odpowiedź, zapisuje ją
+    public boolean isFinished() {
+        return finished;
+    }
 }

@@ -52,22 +52,27 @@ public class ConnectionHandler extends Thread {
                 socket.receive(incomingPacket);
                 String received = new String(incomingPacket.getData(), 0, incomingPacket.getLength());
                 System.out.println(received);
-                if( (received.equals("HelloC")) &&(!activeUsers.containsKey(incomingPacket.getAddress()))) {
+                if( (received.equals("HelloC")) &&(!activeUsers.containsKey(incomingPacket.getAddress()))
+                && activeUsers.size() <= 250) {
                     InetAddress ip = incomingPacket.getAddress();
                     int port = incomingPacket.getPort();
                     ServerThread thread = new ServerThread(socket, ip, port, null, quiz);
                     System.out.println("New user");
                     activeUsers.put(ip,thread);
                     thread.start();
-                }else {
-                    if(activeUsers.containsKey(incomingPacket.getAddress()))
-                    {
-                        activeUsers.get(incomingPacket.getAddress()).getAnswer(incomingPacket);
-
-                    }else
-                    {
-                        System.out.println("Error Non existing user");
-                    }
+                }else if(activeUsers.containsKey(incomingPacket.getAddress()))
+                {
+                    InetAddress address = incomingPacket.getAddress();
+                    ServerThread currentlyServed = activeUsers.get(address);
+                currentlyServed.getAnswer(incomingPacket);
+                if(currentlyServed.isFinished()){
+                    activeUsers.remove(address);
+                }
+                }else if(activeUsers.size() > 250) {
+                    System.out.println("Error Server at maximum capacity");
+                }
+                else{
+                    System.out.println("Error Non existing user");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
